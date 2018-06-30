@@ -315,6 +315,21 @@ var dataSchema = new Schema({..}, { collection: 'data' });
 
 ### 选项 id
 
+`mongoose` 会默认在你的每一个纲要上声明一个虚拟访问器，这个访问器会将文档的`_id`属性转换成字符串返回，当文档的`_id`属性为`ObjectID`类型时，它会返回`ObjectId`的十六进制字符串。如果你不希望这个名为`id`的虚拟属性访问器被添加到你的纲要中，你可以在纲要被创建的时候设置`id`选项的值为假。
+
+```js
+// 默认情况下
+var schema = new Schema({ name: String });
+var Page = mongoose.model('Page', schema);
+var p = new Page({ name: 'mongodb.org' });
+console.log(p.id); // '50341373e894ad16347efe01'
+
+// 禁用id虚拟属性访问器
+var schema = new Schema({ name: String }, { id: false });
+var Page = mongoose.model('Page', schema);
+var p = new Page({ name: 'mongodb.org' });
+console.log(p.id); // undefined
+```
 
 
 
