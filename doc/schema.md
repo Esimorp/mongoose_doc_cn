@@ -331,7 +331,29 @@ var p = new Page({ name: 'mongodb.org' });
 console.log(p.id); // undefined
 ```
 
+### 选项 _id
 
+对于你所声明的每一个纲要，若果你没有在这个纲要的构造中声明一个`_id`属性的话，`mongoose`默认会在这个纲要上声明一个_id属性。和`MongoDB`的默认行为一样，这个`_id`属性的类别会被声明为`ObjectId`。如果你不希望这个`_id`属性被添加到你的纲要中的话，你可以使用 `_id`选项来禁用它。
+
+你**只可以**在子文档(subdocuments)中使用这个选项。`mongoose`在不知道一个文档的id的情况下不能对这个文档进行储存，所以当你尝试着去保存一个没有`_id`属性的文档的时候，你将会得到一个错误。
+
+```js
+// 默认行为
+var schema = new Schema({ name: String });
+var Page = mongoose.model('Page', schema);
+var p = new Page({ name: 'mongodb.org' });
+console.log(p); // { _id: '50341373e894ad16347efe01', name: 'mongodb.org' }
+
+// 禁用 _id
+var childSchema = new Schema({ name: String }, { _id: false });
+var parentSchema = new Schema({ children: [childSchema] });
+
+var Model = mongoose.model('Model', parentSchema);
+
+Model.create({ children: [{ name: 'Luke' }] }, function(error, doc) {
+  // doc.children[0]._id will be undefined
+});
+```
 
 
 
