@@ -195,6 +195,94 @@ personSchema.virtual('fullName').get(function () {
 console.log(axl.fullName); // Axl Rose
 ```
 
+当你使用`toJSON()`方法或者`toObject()`方法(或者对一个`mongoose`文档使用`JSON.stringify()`方法)的时候，默认情况下`mongoose`将不会把虚拟属性包含在内，如果你想要将虚拟属性包含在内，那么就将`{virtuals:true}`参数一并传递给`toObject()`方法或者`toJSON()`方法
+
+
+你也可以为你的虚拟属性增加一个自定义的赋值器，这可以使你通过修改`fullName`虚拟属性来同时修改`first`和`last`两个属性
+
+```js
+personSchema.virtual('fullName').
+  get(function() { return this.name.first + ' ' + this.name.last; }).
+  set(function(v) {
+    this.name.first = v.substr(0, v.indexOf(' '));
+    this.name.last = v.substr(v.indexOf(' ') + 1);
+  });
+
+axl.fullName = 'William Rose'; // 现在 `axl.name.first` 变成了 "William"
+```
+
+使用虚拟属性赋值器修改属性的话会在其它的验证之前生效，所以当上面例子中的`first`和`last`属性被标记成非空的时候，例子也会生效。
+
+只有非虚拟属性的属性能够在查询或者选择属性中使用。只要虚拟属性没有在`MongoDB`中持久化，你就不能去查询它们。
+
+## 别名
+
+别名是一种特别的虚拟属性。它的作用是为了节省网络的带宽，你可以使用短名来持久化在`MongoDB`中，然后使用一个长名来增加代码的可读性。
+
+```js
+var personSchema = new Schema({
+  n: {
+    type: String,
+    // 现在可以通过访问`name`属性来获取`n`属性的值，也可以通过设置`n`属性的值来设置`name`属性的值
+    alias: 'name'
+  }
+});
+
+// 对于`name`属性的修改将会被传到到`n`属性
+var person = new Person({ name: 'Val' });
+console.log(person); // { n: 'Val' }
+console.log(person.toObject({ virtuals: true })); // { n: 'Val', name: 'Val' }
+console.log(person.name); // "Val"
+
+person.name = 'Not Val';
+console.log(person); // { n: 'Not Val' }
+```
+
+## 选项
+纲要拥有一些可配置的选项，你可以通过构造方法传递或者直接调用`set`方法
+Schemas have a few configurable options which can be passed to the constructor or set directly:
+
+``` js
+new Schema({..}, options);
+
+// or
+
+var schema = new Schema({..});
+schema.set(option, value);
+```
+
+可以使用的选项
+
+* autoIndex
+* bufferCommands
+* capped
+* collection
+* id
+* _id
+* minimize
+* read
+* shardKey
+* strict
+* strictQuery
+* toJSON
+* toObject
+* typeKey
+* validateBeforeSave
+* versionKey
+* collation
+* skipVersioning
+* timestamps
+
+### 选项: autoIndex
+
+当应用启动的时候，`mongoose`会给你在你的纲要上声明的每一个索引发送一个`createIndex`命令。在`mongoose` 3.x版本中，索引会默认在后台创建。如果你希望禁用自动创建功能并且手动处理索引创建的时机的话，你需要将你的纲要的`autoIndex`选项设置为假，并且在你的模型上手动调用`ensureIndexes`
+
+```js
+var schema = new Schema({..}, { autoIndex: false });
+var Clock = mongoose.model('Clock', schema);
+Clock.ensureIndexes(callback);
+```
+
 
 
 
