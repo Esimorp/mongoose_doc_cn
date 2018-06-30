@@ -355,6 +355,43 @@ Model.create({ children: [{ name: 'Luke' }] }, function(error, doc) {
 });
 ```
 
+### 选项 minimize
+
+`mongoose`默认会通过移除空对象来最小化纲要
+
+```js
+var schema = new Schema({ name: String, inventory: {} });
+var Character = mongoose.model('Character', schema);
+
+// 当inventory属性不为空的情况下，它将会被持久化
+var frodo = new Character({ name: 'Frodo', inventory: { ringOfPower: 1 }});
+Character.findOne({ name: 'Frodo' }, function(err, character) {
+  console.log(character); // { name: 'Frodo', inventory: { ringOfPower: 1 }}
+});
+
+// 当inventory属性为空的情况下，它将不会被持久化
+var sam = new Character({ name: 'Sam', inventory: {}});
+Character.findOne({ name: 'Sam' }, function(err, character) {
+  console.log(character); // { name: 'Sam' }
+});
+```
+
+通过将`minimize`选项设置为假来让空属性可以被持久化
+
+```js
+var schema = new Schema({ name: String, inventory: {} }, { minimize: false });
+var Character = mongoose.model('Character', schema);
+
+// 即使inventory属性为空，它也将被持久化
+var sam = new Character({ name: 'Sam', inventory: {}});
+Character.findOne({ name: 'Sam' }, function(err, character) {
+  console.log(character); // { name: 'Sam', inventory: {}}
+});
+```
+
+
+
+
 
 
 
