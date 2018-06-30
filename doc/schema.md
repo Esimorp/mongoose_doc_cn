@@ -283,6 +283,37 @@ var Clock = mongoose.model('Clock', schema);
 Clock.ensureIndexes(callback);
 ```
 
+### 选项：bufferCommands
+
+默认情况下，当数据库连接断开，`mongoose`将会缓存命令直到驱动重新连接到数据库。想要禁止缓存命令的话，你需要将`bufferCommands`选项设置为假
+
+```js
+var schema = new Schema({..}, { bufferCommands: false });
+```
+纲要级别的`bufferCommands`选项将会覆盖全局的`bufferCommands`选项
+
+```js
+mongoose.set('bufferCommands', true);
+// 上面的全局设置将被下面的纲要设置覆盖
+var schema = new Schema({..}, { bufferCommands: false });
+```
+
+### 选项：capped
+
+`mongoose` 支持 `MongoDB`的定长集合，如果你想将集合指定为 `MongoDB` 底层的定长集合，你需要为`capped`选项以`字节`为单位设置集合的最大大小
+```js
+new Schema({..}, { capped: 1024 });
+```
+
+### 选项 collection
+
+`mongoose`默认通过将模型名称传递给`utils.toCollectionName`方法以用来提供一个集合名称。这个方法会把模型的名称变为复数形式。如果你需要一个不一样的集合名称的话，你需要在 `collection` 选项中设置它。
+
+```js
+var dataSchema = new Schema({..}, { collection: 'data' });
+```
+
+### 选项 id
 
 
 
