@@ -629,8 +629,50 @@ var thing = new Thing();
 thing.save(); // `created_at` 和 `updatedAt` 属性将会被添加
 ```
 
+### 选项 useNestedStrict
 
+在`mongoose`的第四版以后，`update()`和 `findOneAndUpdate()`方法只会遵守最顶层的纲要的严格模式设定。
 
+```js
+var childSchema = new Schema({}, { strict: false });
+var parentSchema = new Schema({ child: childSchema }, { strict: 'throw' });
+var Parent = mongoose.model('Parent', parentSchema);
+Parent.update({}, { 'child.name': 'Luke Skywalker' }, function(error) {
+  // 这将会产生异常，因为 parentSchema纲要拥有 `strict:throw`选项设定，即使在 childSchema 纲要拥有 `strict:false`选项设定
+});
+
+var update = { 'child.name': 'Luke Skywalker' };
+var opts = { strict: false };
+Parent.update({}, update, opts, function(error) {
+  // 这将会正常工作，因为将 `strict:false`参数传递给`update()`方法的话将会覆盖parentSchema的纲要设定
+});
+```
+
+如果你为你的纲要的`useNestedStrict`选项赋予了真值，`mongoose`在更新文档操作中将会使用子纲要的严格模式选项
+
+```js
+var childSchema = new Schema({}, { strict: false });
+var parentSchema = new Schema({ child: childSchema },
+  { strict: 'throw', useNestedStrict: true });
+var Parent = mongoose.model('Parent', parentSchema);
+Parent.update({}, { 'child.name': 'Luke Skywalker' }, function(error) {
+  // 正常工作
+});
+```
+
+## 可插拔(Pluggable)
+
+纲要是可以通过将可复用的功能打包进插件中来和社区分享，或者仅仅在你的项目中共享的。
+
+## 获取更多信息
+
+想要获取更多的`MongoDB`的知识，你需要了解基础的`MongoDB`的纲要设计方式。`SQL`纲要设计方式(第三范式)是为了使数据开销最低。而`MongoDB`得纲要设计方式是使通常查询越快越好。`6个MongoDB得纲要设计法则`是一个用来学习如何让你的查询变得更快的非常棒的资源。
+
+想要精通在`nodejs`中的`MongoDB`的纲要设计方式的用户应该读一读Christian Kvalheim所编写的书籍 [The Little MongoDB Schema Design Book](http://bit.ly/mongodb-schema-design)。这本书的作者是`MongoDB`的`nodejs`驱动的编写者。这本书展示给你对于一个洗衣店列表的数据，应该如何实现高性能的纲要，包括了电子商务，内部维基百科，和预约的用户用例。
+
+## 下一步
+
+现在我们已经了解了纲要相关的内容，下一步让我们来看看纲要类别。
 
 
 
