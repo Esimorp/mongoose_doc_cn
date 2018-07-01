@@ -584,7 +584,9 @@ var thing = new Thing({ name: 'no versioning please' });
 thing.save(); // { name: 'no versioning please' }
 ```
 
+### 选项 collation
 
+为一个纲要的所有查询和聚合操作设置一个排列模式。[这里是一个对新手很有要的排列模式概览]()
 
 
 
