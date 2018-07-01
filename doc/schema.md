@@ -558,6 +558,31 @@ var schema = new Schema({
 }, { typeKey: '$type' }); // 设置'$type'键为纲要类别声明键
 ```
 
+### 选项 versionKey
+
+`versionKey`是一个当文档第一次被`mongoose`创建的时候会被设置的属性。这个属性的值记录了文档在`mongoose`内部被修改的次数。`versionKey`选项的值是一个字符串类型的值，用来声明哪个属性(path)应该被用来记录版本。这个值默认为`__v`。如果这个值和你的应用产生冲突，你可以像这样设置你的纲要来避免。
+
+```js
+var schema = new Schema({ name: 'string' });
+var Thing = mongoose.model('Thing', schema);
+var thing = new Thing({ name: 'mongoose v3' });
+thing.save(); // { __v: 0, name: 'mongoose v3' }
+
+// 设置自定义的 versionKey
+new Schema({..}, { versionKey: '_somethingElse' })
+var Thing = mongoose.model('Thing', schema);
+var thing = new Thing({ name: 'mongoose v3' });
+thing.save(); // { _somethingElse: 0, name: 'mongoose v3' }
+```
+
+文档的版本管理可以被禁用。 但首先你需要明确的知道[你正在干什么]();
+
+```js
+new Schema({..}, { versionKey: false });
+var Thing = mongoose.model('Thing', schema);
+var thing = new Thing({ name: 'no versioning please' });
+thing.save(); // { name: 'no versioning please' }
+```
 
 
 
