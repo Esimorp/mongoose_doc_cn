@@ -498,8 +498,45 @@ const MyModel = mongoose.model('Test', mySchema);
 MyModel.find({ notInSchema: 1 });
 ```
 
+### 选项 toObject
+
+文档拥有一个`toObject`方法，它可以将`mongoose`文档对象转化为一个标准的`javascript`对象。这个方法可以接受一些参数。预期在每一个文档对象中设置这个选项，我们更应该在纲要级别设置这个选项，这样这个纲要所有的文档都会被默认设置。
 
 
+想要让所有的虚拟属性在`console.log`方法中输出的话，只需要将纲要的`toObject`选项赋值为`{ getters: true }`
+
+```js
+var schema = new Schema({ name: String });
+schema.path('name').get(function (v) {
+  return v + ' is my name';
+});
+schema.set('toObject', { getters: true });
+var M = mongoose.model('Person', schema);
+var m = new M({ name: 'Max Headroom' });
+console.log(m); // { _id: 504e0cd7dd992d9be2f20b6f, name: 'Max Headroom is my name' }
+```
+
+[这里]()有全部的`toObject`选项可选值。
+
+### 选项 toJSON
+
+就像`toObject`选项一样，但是仅仅会在文档的`toJSON`方法被调用时生效
+
+```js
+var schema = new Schema({ name: String });
+schema.path('name').get(function (v) {
+  return v + ' is my name';
+});
+schema.set('toJSON', { getters: true, virtuals: false });
+var M = mongoose.model('Person', schema);
+var m = new M({ name: 'Max Headroom' });
+console.log(m.toObject()); // { _id: 504e0cd7dd992d9be2f20b6f, name: 'Max Headroom' }
+console.log(m.toJSON()); // { _id: 504e0cd7dd992d9be2f20b6f, name: 'Max Headroom is my name' }
+// since we know toJSON is called whenever a js object is stringified:
+console.log(JSON.stringify(m)); // { "_id": "504e0cd7dd992d9be2f20b6f", "name": "Max Headroom is my name" }
+```
+
+想要查看所有的`toJSON/toObject`选项的可选值，请看[这里]()。
 
 
 
