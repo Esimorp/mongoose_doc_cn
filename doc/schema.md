@@ -388,6 +388,33 @@ Character.findOne({ name: 'Sam' }, function(err, character) {
   console.log(character); // { name: 'Sam', inventory: {}}
 });
 ```
+### 选项 read
+
+通过在纲要级别设置[query#read]() 选项来让我们设置一个模型的全部查询的 [读取优先级]()
+
+```js
+var schema = new Schema({..}, { read: 'primary' });            // 可以简写为 'p'
+var schema = new Schema({..}, { read: 'primaryPreferred' });   // 可以简写为 'pp'
+var schema = new Schema({..}, { read: 'secondary' });          // 可以简写为 's'
+var schema = new Schema({..}, { read: 'secondaryPreferred' }); // 可以简写为 'sp'
+var schema = new Schema({..}, { read: 'nearest' });            // 可以简写为 'n'
+```
+
+为了防止拼写错误，每个选项都提供了一个别名，就像`secondaryPreferred`可以简写为`sp`
+
+选项 `read` 也允许我们使用 `tag` 组。这些`tag`组会告知驱动它应该从哪里去尝试读取数据。关于`tag`组的信息可以在[这里]()和[这里]()找到更多。
+
+注意：你也可以在驱动连接的时候指定一个读取策略
+
+```js
+// 每隔一段时间检测连接
+var options = { replset: { strategy: 'ping' }};
+mongoose.connect(uri, options);
+
+var schema = new Schema({..}, { read: ['nearest', { disk: 'ssd' }] });
+mongoose.model('JellyBean', schema);
+```
+
 
 
 
