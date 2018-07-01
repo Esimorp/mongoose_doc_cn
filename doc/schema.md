@@ -547,6 +547,19 @@ console.log(JSON.stringify(m)); // { "_id": "504e0cd7dd992d9be2f20b6f", "name": 
 var schema = new Schema({ loc: { type: String, coordinates: [Number] } });
 ```
 
+然而对于像`geoJSON`一样的应用，`type`属性是非常关键的。如果你想控制`mongoose`应该用哪个键来读取纲要类别声明的话，你只需要在纲要选项中设置`typeKey`选项
+
+```js
+var schema = new Schema({
+  //mongoose 会认为loc是一个对象类别，有两个属性type和coordinates
+  loc: { type: String, coordinates: [Number] },
+  // mongoose 会认为name是字符串类型的纲要类别
+  name: { $type: String }
+}, { typeKey: '$type' }); // 设置'$type'键为纲要类别声明键
+```
+
+
+
 
 
 
