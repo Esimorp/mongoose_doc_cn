@@ -538,10 +538,14 @@ console.log(JSON.stringify(m)); // { "_id": "504e0cd7dd992d9be2f20b6f", "name": 
 
 想要查看所有的`toJSON/toObject`选项的可选值，请看[这里]()。
 
+### 选项 typeKey
 
+默认情况下，如果你的对象在纲要中有一个名为`type`的键，`mongoose`会认为`type`的键和值是纲要类别的声明。
 
-
-
+```js
+// mongoose会认为loc是字符串类别，而不会认为loc是一个对象类别，有两个属性type和coordinates
+var schema = new Schema({ loc: { type: String, coordinates: [Number] } });
+```
 
 
 
