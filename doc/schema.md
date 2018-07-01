@@ -415,14 +415,56 @@ var schema = new Schema({..}, { read: ['nearest', { disk: 'ssd' }] });
 mongoose.model('JellyBean', schema);
 ```
 
-选项: shardKey
+### 选项 shardKey
 
 当你为你的`MongoDB`配置了分片策略后，你可以使用`sharedKey`选项。 每一个分片集合在进行插入或更新操作时，都必须要有一个分片键(shard key)。 我们只需要设置这个纲要选项，`mongoose`就会完成其余工作
 
 注意，`mongoose`并不会为你发送`shardcollection`命令，你必须自己配置分片。
 
+### 选项 strict
 
+严格模式在`mongoose`中是默认开启的，它会确保那些没有在我们的纲要中定义并且被赋予给纲要的模型的属性不会被持久化到`MongoDB`
 
+```js
+var thingSchema = new Schema({..})
+var Thing = mongoose.model('Thing', thingSchema);
+var thing = new Thing({ iAmNotInTheSchema: true });
+thing.save(); // iAmNotInTheSchema 属性不会被持久化到数据库
+
+// 将严格模式关闭
+var thingSchema = new Schema({..}, { strict: false });
+var thing = new Thing({ iAmNotInTheSchema: true });
+thing.save(); // 现在iAmNotInTheSchema属性将会被持久化到数据库
+```
+
+严格模式同样对 `doc.set()`方法生效
+
+```js
+var thingSchema = new Schema({..})
+var Thing = mongoose.model('Thing', thingSchema);
+var thing = new Thing;
+thing.set('iAmNotInTheSchema', true);
+thing.save(); // iAmNotInTheSchema 属性不会被持久化到数据库
+```
+
+严格模式的选项值可以通过在模型的构造方法中传递第二个布尔类型参数从而在模型级别被覆盖
+
+```js
+var Thing = mongoose.model('Thing');
+var thing = new Thing(doc, true);  // 启动严格模式
+var thing = new Thing(doc, false); // 禁用严格模式
+```
+严格模式的选项也可以被赋值为`"throw"`，如果这样设置的话，当你在模型中储存一个没有在纲要中声明的属性时，`mongoose`会抛出异常而不是简单的无视这些属性。
+
+注意，通过`.`方式直接赋值给模型实例的键和值都将会被忽视，即使你在纲要级别将`strict`设置为假
+
+```js
+var thingSchema = new Schema({..})
+var Thing = mongoose.model('Thing', thingSchema);
+var thing = new Thing;
+thing.iAmNotInTheSchema = true;
+thing.save(); // iAmNotInTheSchema 属性不会被持久化到数据库
+```
 
 
 
