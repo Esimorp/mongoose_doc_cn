@@ -616,7 +616,18 @@ thing.dontVersionMe.push('hey');
 thing.save(); // 版本号将不会增加
 ```
 
+### 选项 timestamps
 
+如果设置了 `timestamps` 选项，`mongoose`将会在你的纲要中自动增加`createdAt`和`updatedAt`属性。 这两个属性的类型为`Date`
+
+默认情况下，这两个属性的名称为`createdAt`和`updatedAt`，可以通过设置 `timestamps`选项的`createdAt`和`updatedAt`属性来修改这两个属性的名字。
+
+```js
+var thingSchema = new Schema({..}, { timestamps: { createdAt: 'created_at' } });
+var Thing = mongoose.model('Thing', thingSchema);
+var thing = new Thing();
+thing.save(); // `created_at` 和 `updatedAt` 属性将会被添加
+```
 
 
 
