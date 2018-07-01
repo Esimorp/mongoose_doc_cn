@@ -588,6 +588,24 @@ thing.save(); // { name: 'no versioning please' }
 
 为一个纲要的所有查询和聚合操作设置一个排列模式。[这里是一个对新手很有要的排列模式概览]()
 
+```js
+var schema = new Schema({
+  name: String
+}, { collation: { locale: 'en_US', strength: 1 } });
+
+var MyModel = db.model('MyModel', schema);
+
+MyModel.create([{ name: 'val' }, { name: 'Val' }]).
+  then(function() {
+    return MyModel.find({ name: 'val' });
+  }).
+  then(function(docs) {
+    // docs对象将会同时包含两个文档，因为`strength: 1`参数意味着 MongoDB将会在匹配中忽略大小写
+  });
+```
+
+
+
 
 
 
