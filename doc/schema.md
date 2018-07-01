@@ -415,6 +415,15 @@ var schema = new Schema({..}, { read: ['nearest', { disk: 'ssd' }] });
 mongoose.model('JellyBean', schema);
 ```
 
+选项: shardKey
+
+当你为你的`MongoDB`配置了分片策略后，你可以使用`sharedKey`选项。 每一个分片集合在进行插入或更新操作时，都必须要有一个分片键(shard key)。 我们只需要设置这个纲要选项，`mongoose`就会完成其余工作
+
+注意，`mongoose`并不会为你发送`shardcollection`命令，你必须自己配置分片。
+
+
+
+
 
 
 
