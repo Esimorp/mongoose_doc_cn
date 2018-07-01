@@ -604,6 +604,18 @@ MyModel.create([{ name: 'val' }, { name: 'Val' }]).
   });
 ```
 
+### 选项 skipVersioning
+
+skipVersioning allows excluding paths from versioning (i.e., the internal revision will not be incremented even if these paths are updated). DO NOT do this unless you know what you're doing. For subdocuments, include this on the parent document using the fully qualified path.
+
+`skipVersioning` 选项可以让你从文档的版本控制中排除某些属性（当这些属性被修改时，文档的版本号不会增加）。在你知道你正在做些什么之前，请不要使用这个选项。对于子文档，你可以使用合法的完整路径来使用这个选项，例如 `{skipVersioning:{parent.sub.path:true}}`
+
+```js
+new Schema({..}, { skipVersioning: { dontVersionMe: true } });
+thing.dontVersionMe.push('hey');
+thing.save(); // 版本号将不会增加
+```
+
 
 
 
