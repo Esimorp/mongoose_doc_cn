@@ -466,6 +466,39 @@ thing.iAmNotInTheSchema = true;
 thing.save(); // iAmNotInTheSchema 属性不会被持久化到数据库
 ```
 
+### 选项 strictQuery
+
+为了向后兼容，`strict`选项并不会对查询的`filter`参数产生影响
+
+```js
+const mySchema = new Schema({ field: Number }, { strict: true });
+const MyModel = mongoose.model('Test', mySchema);
+
+// mongoose将**不会** 丢弃 `notInSchema: 1`参数，尽管有了 `strict: true` 选项
+MyModel.find({ notInSchema: 1 });
+```
+
+但是`strict`选项会影响文档更新
+
+```js
+// Mongoose将会在更新操作中舍弃 `notInSchema`参数如果`strict`选项的值非假的话
+MyModel.updateMany({}, { $set: { notInSchema: 1 } });
+```
+
+`mongoose`有一个单独的 `strictQuery`选项来作为严格模式是否会影响查询的`filter`参数的开关
+
+```js
+const mySchema = new Schema({ field: Number }, {
+  strict: true,
+  strictQuery: true //为所有查询打开严格模式
+});
+const MyModel = mongoose.model('Test', mySchema);
+
+// mongoose 将会舍弃 `notInSchema: 1` 参数因为`strictQuery`选项的值为真
+MyModel.find({ notInSchema: 1 });
+```
+
+
 
 
 
